@@ -3,7 +3,6 @@ package erspan
 import (
 	"encoding/hex"
 	"fmt"
-	"log"
 	"net"
 	"syscall"
 	"github.com/google/gopacket"
@@ -19,7 +18,7 @@ type ErspanEncap struct {
 func NewErspanEncap(destIp string, key uint32, startSeqNum uint32) *ErspanEncap {
 	ip := net.ParseIP(destIp)
 	if ip == nil {
-		log.Printf("Error: Incorrect IP address passed to Connect %s\n", destIp)
+		fmt.Printf("Error: Incorrect IP address passed to Connect %s\n", destIp)
 	}
 	encap := ErspanEncap{
 		DestIp:		ip,
@@ -32,7 +31,7 @@ func NewErspanEncap(destIp string, key uint32, startSeqNum uint32) *ErspanEncap 
 func (encap *ErspanEncap) Connect() error {
 	fd, err := syscall.Socket(syscall.AF_INET, syscall.SOCK_RAW, syscall.IPPROTO_GRE)
 	if err != nil {
-		log.Printf("Failed to open socket to send GRE traffic %s\n", err)
+		fmt.Printf("Failed to open socket to send GRE traffic %s\n", err)
 		return err
 	}
 	encap.fd = fd
@@ -54,7 +53,7 @@ func (encap *ErspanEncap) Send(ci gopacket.CaptureInfo, packet []byte) error {
 	ci.Length = len(p)
 	err = syscall.Sendto(encap.fd, p, 0, &addr)
 	if err != nil {
-		log.Fatal("Sendto:", err)
+		fmt.Fatal("Sendto:", err)
 	}
 	return err
 }
